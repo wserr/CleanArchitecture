@@ -8,9 +8,8 @@
 *.sln.docstates
 
 # npm downloaded files
-bootstrap/dist/
-jquery/dist/
-jquery-validation/dist/
+dist/
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
