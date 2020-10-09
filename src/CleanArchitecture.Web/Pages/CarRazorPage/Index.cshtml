@@ -1,0 +1,13 @@
+﻿@page
+@model CleanArchitecture.Web.Pages.CarRazorPage.IndexModel
+
+<h2>Cars (Razor Page)</h2>
+<ul>
+    @foreach (var item in Model.Cars)
+    {
+        <li>
+            @item.Name
+            <br />@item.Price
+        </li>
+    }
+</ul>

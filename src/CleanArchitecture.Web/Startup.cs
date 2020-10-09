@@ -35,7 +35,7 @@ namespace CleanArchitecture.Web
 				options.MinimumSameSitePolicy = SameSiteMode.None;
 			});
 
-			string connectionString = Configuration.GetConnectionString("SqliteConnection");  //Configuration.GetConnectionString("DefaultConnection");
+			string connectionString = Configuration.GetConnectionString("DefaultConnection");  //Configuration.GetConnectionString("DefaultConnection");
 
 
 			services.AddDbContext(connectionString);
