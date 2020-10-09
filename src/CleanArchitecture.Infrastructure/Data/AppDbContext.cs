@@ -28,6 +28,11 @@ namespace CleanArchitecture.Infrastructure.Data
 
         public DbSet<ToDoItem> ToDoItems { get; set; }
 
+        public DbSet<Car> Cars { get; set; }
+
+        public DbSet<Sales> Sales {get; set;}
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
