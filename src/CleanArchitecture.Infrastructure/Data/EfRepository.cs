@@ -3,6 +3,7 @@ using Ardalis.Specification.EntityFrameworkCore;
 using CleanArchitecture.SharedKernel;
 using CleanArchitecture.SharedKernel.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace CleanArchitecture.Infrastructure.Data
 
         public Task<List<T>> ListAsync<T>() where T : BaseEntity, IAggregateRoot
         {
+            // If not retrieved as AsNoTracking, modifications that happened inside a transaction will stay in cache
             return _dbContext.Set<T>().ToListAsync();
         }
 
@@ -64,5 +66,6 @@ namespace CleanArchitecture.Infrastructure.Data
             var evaluator = new SpecificationEvaluator<T>();
             return evaluator.GetQuery(_dbContext.Set<T>().AsQueryable(), spec);
         }
+
     }
 }

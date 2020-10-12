@@ -1,5 +1,7 @@
 ﻿using Ardalis.ListStartupServices;
 using Autofac;
+using CleanArchitecture.Core.Interfaces;
+using CleanArchitecture.Core.Services;
 using CleanArchitecture.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,6 +44,7 @@ namespace CleanArchitecture.Web
 
 			services.AddControllersWithViews().AddNewtonsoftJson();
 			services.AddRazorPages();
+			services.AddTransient<ISalesService, SalesService>();
 
 			services.AddSwaggerGen(c => {
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
