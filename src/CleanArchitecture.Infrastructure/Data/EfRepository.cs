@@ -3,6 +3,7 @@ using Ardalis.Specification.EntityFrameworkCore;
 using CleanArchitecture.SharedKernel;
 using CleanArchitecture.SharedKernel.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,6 @@ namespace CleanArchitecture.Infrastructure.Data
 
         public Task<List<T>> ListAsync<T>() where T : BaseEntity, IAggregateRoot
         {
-            // If not retrieved as AsNoTracking, modifications that happened inside a transaction will stay in cache
             return _dbContext.Set<T>().ToListAsync();
         }
 
@@ -52,7 +52,11 @@ namespace CleanArchitecture.Infrastructure.Data
         public async Task UpdateAsync<T>(T entity) where T : BaseEntity, IAggregateRoot
         {
             _dbContext.Entry(entity).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> SaveChangesAsync()
+        {
+            return _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync<T>(T entity) where T : BaseEntity, IAggregateRoot
@@ -67,5 +71,25 @@ namespace CleanArchitecture.Infrastructure.Data
             return evaluator.GetQuery(_dbContext.Set<T>().AsQueryable(), spec);
         }
 
+        public async Task RejectChangesAsync()
+        {
+            foreach (var entry in _dbContext.ChangeTracker.Entries())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Modified:
+                        await entry.ReloadAsync();
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified; //Revert changes made to deleted entity.
+                        entry.State = EntityState.Unchanged;
+                        await entry.ReloadAsync();
+                        break;
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                }
+            }
+        }
     }
 }

@@ -39,11 +39,13 @@ namespace CleanArchitecture.Core.Services
                         await repo.UpdateAsync(car);
                         throw new Exception("Updating car failed!");
                         await repo.UpdateAsync(sale);
+                        await repo.SaveChangesAsync();
                         scope.Complete();
                     }
                 }
                 catch (Exception ex)
                 {
+                    await repo.RejectChangesAsync();
                     errorMsg = ex.Message;
                 }
             }
@@ -58,8 +60,8 @@ namespace CleanArchitecture.Core.Services
             var errorMsg = string.Empty;
 
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required,
-        new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted }))
+            using (var scope = new TransactionScope(
+                TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
@@ -71,12 +73,13 @@ namespace CleanArchitecture.Core.Services
                         await repo.UpdateAsync(car);
                         await repo.UpdateAsync(sale);
                         throw new Exception("Updating sale failed!");
+                        await repo.SaveChangesAsync();
                         scope.Complete();
                     }
                 }
                 catch (Exception ex)
                 {
-                    // TODO WIS Should re create the context, to reset the state of already updated entities
+                    await repo.RejectChangesAsync();
                     errorMsg = ex.Message;
                 }
             }
@@ -102,11 +105,13 @@ namespace CleanArchitecture.Core.Services
 
                         await repo.UpdateAsync(car);
                         await repo.UpdateAsync(sale);
+                        await repo.SaveChangesAsync();
                         scope.Complete();
                     }
                 }
                 catch (Exception ex)
                 {
+                    await repo.RejectChangesAsync();
                     errorMsg = ex.Message;
                 }
             }
